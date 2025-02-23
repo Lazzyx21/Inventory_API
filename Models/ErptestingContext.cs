@@ -19,6 +19,8 @@ public partial class ErptestingContext : DbContext
 
     public virtual DbSet<Iproduct> Iproducts { get; set; }
 
+    public virtual DbSet<Mproduct> Mproducts { get; set; }
+
     public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
 
     public virtual DbSet<PurchaseLog> PurchaseLogs { get; set; }
@@ -47,6 +49,10 @@ public partial class ErptestingContext : DbContext
             entity.Property(e => e.ProductId).HasColumnName("ProductID");
             entity.Property(e => e.Quantity).HasDefaultValue(0);
             entity.Property(e => e.Wid).HasColumnName("WID");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.Inventories)
+                .HasForeignKey(d => d.ProductId)
+                .HasConstraintName("FK__MInventor__Produ__07C12930");
         });
 
         modelBuilder.Entity<Iproduct>(entity =>
@@ -55,7 +61,30 @@ public partial class ErptestingContext : DbContext
 
             entity.Property(e => e.IproductId).HasColumnName("IProductID");
             entity.Property(e => e.Sku).HasColumnName("SKU");
-            entity.Property(e => e.Supplier).HasMaxLength(100);
+            entity.Property(e => e.SupplierId).HasColumnName("SupplierID");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.Iproducts)
+                .HasForeignKey(d => d.ProductId)
+                .HasConstraintName("FK__IProducts__Produ__4183B671");
+        });
+
+        modelBuilder.Entity<Mproduct>(entity =>
+        {
+            entity.HasKey(e => e.ProductId).HasName("PK__MProduct__B40CC6EDD986E7ED");
+
+            entity.ToTable("MProduct", "manufacturing");
+
+            entity.Property(e => e.Category)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Description).HasColumnType("text");
+            entity.Property(e => e.MaterialsRequired)
+                .HasColumnType("text")
+                .HasColumnName("Materials Required");
+            entity.Property(e => e.ProductName)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.UnitPrice).HasColumnType("decimal(10, 2)");
         });
 
         modelBuilder.Entity<OrderStatus>(entity =>

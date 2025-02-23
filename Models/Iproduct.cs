@@ -11,5 +11,7 @@ public partial class Iproduct
 
     public int? Sku { get; set; }
 
-    public string? Supplier { get; set; }
+    public int? SupplierId { get; set; }
+
+    public virtual Mproduct? Product { get; set; }
 }

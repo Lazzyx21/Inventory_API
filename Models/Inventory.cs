@@ -18,4 +18,6 @@ public partial class Inventory
     public byte[] LastUpdated { get; set; } = null!;
 
     public int? Qunatity { get; set; }
+
+    public virtual Mproduct? Product { get; set; }
 }
