@@ -29,12 +29,14 @@ namespace Inventory_API.Services
         /// List products in inventory
         /// </summary>
         /// <returns></returns>
-        /// aa
+
         public async Task<GenericApiResponse<List<InventoryProductManagementResponses>>> listProductAsync()
         {
             GenericApiResponse<List<InventoryProductManagementResponses>> response = new();
             List<InventoryProductManagementResponses> listR = new();
-            try 
+
+
+            try
             {
                 listR = await _dbContext.Mproducts.Select(s => new InventoryProductManagementResponses
                     {
@@ -63,6 +65,7 @@ namespace Inventory_API.Services
         /// </summary>
         /// <param name="createRequest"></param>
         /// <returns></returns>
+
         public async Task<GenericApiResponse<InventoryProductManagementResponses>> createProductAsync(InventoryProductManagementRequest createRequest)
         {
             GenericApiResponse<InventoryProductManagementResponses> response = new();
@@ -119,50 +122,51 @@ namespace Inventory_API.Services
         /// </summary>
         /// <param name="updateRequest"></param>
         /// <returns></returns>
-        /// 
+
 
         // remember that total stock value has to be there as well...
-        public Task<GenericApiResponse<string>> updateProductAsync(InventoryProductManagementRequest updateRequest)
-        {
-            GenericApiResponse<string> response = new();
-            try
-            {
-                var updateIproduct = _dbContext.Iproducts.Where(p => p.IproductId == updateRequest.IproductId).First();
 
-                if(updateIproduct == null)
-                {
-                    response.status = 1;
-                    response.ErrorDesc = "Empty Input can't be accpeted..";
-                    _logger.LogWarning("Can't be null");
+        //public Task<GenericApiResponse<string>> updateProductAsync(InventoryProductManagementRequest updateRequest)
+        //{
+        //    GenericApiResponse<string> response = new();
+        //    try
+        //    {
+        //        var updateIproduct = _dbContext.Iproducts.Where(p => p.IproductId == updateRequest.IproductId).First();
 
-                }
-                else
-                {
-                    updateIproduct.ProductId = updateRequest.ProductId;
-                    updateIproduct.Sku = updateRequest.Sku;
-                    updateIproduct.SupplierId = updateRequest.SupplierId;
+        //        if(updateIproduct == null)
+        //        {
+        //            response.status = 1;
+        //            response.ErrorDesc = "Empty Input can't be accpeted..";
+        //            _logger.LogWarning("Can't be null");
 
-                }
+        //        }
+        //        else
+        //        {
+        //            updateIproduct.ProductId = updateRequest.ProductId;
+        //            updateIproduct.Sku = updateRequest.Sku;
+        //            updateIproduct.SupplierId = updateRequest.SupplierId;
 
-                var updateMproduct = _dbContext.Mproducts.Where(p => p.ProductId == updateRequest.ProductId).First();
-                if (updateMproduct == null)
-                {
-                    response.status = 1;
-                    response.ErrorDesc = "Empty Input can't be accpeted..";
-                    _logger.LogWarning("Can't be null");
-                }
-                else
-                {
-                    updateMproduct.ProductName = updateRequest.ProductName;
-                    updateMproduct.Category = updateRequest.Category;
+        //        }
 
-                }
-            }catch(Exception ex)
-            {
+        //        var updateMproduct = _dbContext.Mproducts.Where(p => p.ProductId == updateRequest.ProductId).First();
+        //        if (updateMproduct == null)
+        //        {
+        //            response.status = 1;
+        //            response.ErrorDesc = "Empty Input can't be accpeted..";
+        //            _logger.LogWarning("Can't be null");
+        //        }
+        //        else
+        //        {
+        //            updateMproduct.ProductName = updateRequest.ProductName;
+        //            updateMproduct.Category = updateRequest.Category;
 
-            }
-            return response;
-        }
+        //        }
+        //    }catch(Exception ex)
+        //    {
+
+        //    }
+        //    return response;
+        //}
 
         /// <summary>
         /// delete product data from inventory
@@ -198,6 +202,7 @@ namespace Inventory_API.Services
         }
 
         //    SKU(Stock Keeping Unit) assignmentns
+        //    SKU(Stock Keeping Unit) assignment
         //    Categorization(e.g., Electronics, Clothing, Food, etc.)
         //    Supplier & Vendor Information
         //    Product Expiry & Batch Tracking(for perishable goods)
