@@ -1,16 +1,15 @@
 ﻿using Inventory_API.DTO.Request;
 using Inventory_API.DTO.Response;
 using Inventory_API.Models;
+using Inventory_API.Services.Interface;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Numerics;
 
 namespace Inventory_API.Services
 {
     //This module is the foundation of your inventory system.It stores all details about products.
 
 
-    public class InventoryProductManagementServices : InventoryProductManagementResponses
+    public class InventoryProductManagementServices : IInventoryProductManagementServices
     {
         private readonly ILogger<InventoryProductManagementServices> _logger;
         private readonly ErptestingContext _dbContext;
@@ -24,13 +23,11 @@ namespace Inventory_API.Services
         }
         //Features:
         //    Add/Edit/Delete products
-
         /// <summary>
         /// List products in inventory
         /// </summary>
         /// <returns></returns>
-
-        public async Task<GenericApiResponse<List<InventoryProductManagementResponses>>> listProductAsync()
+        public async Task<GenericApiResponse<List<InventoryProductManagementResponses>>> ListProductAsync()
         {
             GenericApiResponse<List<InventoryProductManagementResponses>> response = new();
             List<InventoryProductManagementResponses> listR = new();
@@ -39,19 +36,20 @@ namespace Inventory_API.Services
             try
             {
                 listR = await _dbContext.Mproducts.Select(s => new InventoryProductManagementResponses
-                    {
-                        ProductId = s.ProductId,
-                        ProductName = s.ProductName,
-                        Category = s.Category,
-                        UnitPrice = s.UnitPrice,
-                        Description = s.Description,
-                        MaterialsRequired = s.MaterialsRequired,
-                        ImagePath = s.ImagePath
-                    }).ToListAsync();
+                {
+                    ProductId = s.ProductId,
+                    ProductName = s.ProductName,
+                    Category = s.Category,
+                    UnitPrice = s.UnitPrice,
+                    Description = s.Description,
+                    MaterialsRequired = s.MaterialsRequired,
+                    ImagePath = s.ImagePath
+                }).ToListAsync();
                 response.status = 200;
                 response.ErrorDesc = "Everything worksfine";
                 response.Data = listR;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 response.status = -1;
                 response.ErrorMessage = "Something is wrong here..";
@@ -65,14 +63,13 @@ namespace Inventory_API.Services
         /// </summary>
         /// <param name="createRequest"></param>
         /// <returns></returns>
-
-        public async Task<GenericApiResponse<InventoryProductManagementResponses>> createProductAsync(InventoryProductManagementRequest createRequest)
+        public async Task<GenericApiResponse<InventoryProductManagementResponses>> CreateProductAsync(InventoryProductManagementRequest createRequest)
         {
             GenericApiResponse<InventoryProductManagementResponses> response = new();
             if (createRequest == null)
             {
                 response.status = -1;
-                response.ErrorMessage = "UnExpected Erro has occured.";
+                response.ErrorMessage = "UnExpected Error has occured.";
                 _logger.LogWarning("Check the Methond again");
                 return response;
             }
@@ -107,7 +104,7 @@ namespace Inventory_API.Services
                     response.status = 0;
                     response.ErrorDesc = "Created data successfully";
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     response.status = -1;
                     response.ErrorMessage = "Something is wrong here..";
@@ -122,64 +119,74 @@ namespace Inventory_API.Services
         /// </summary>
         /// <param name="updateRequest"></param>
         /// <returns></returns>
-
-
         // remember that total stock value has to be there as well...
+        public async Task<GenericApiResponse<string>> UpdateProductAsync(InventoryProductManagementRequest updateRequest)
+        {
+            GenericApiResponse<string> response = new();
+            try
+            {
+                var updateIproduct = _dbContext.Iproducts.Where(p => p.IproductId == updateRequest.IproductId).First();
 
-        //public Task<GenericApiResponse<string>> updateProductAsync(InventoryProductManagementRequest updateRequest)
-        //{
-        //    GenericApiResponse<string> response = new();
-        //    try
-        //    {
-        //        var updateIproduct = _dbContext.Iproducts.Where(p => p.IproductId == updateRequest.IproductId).First();
+                if (updateIproduct == null)
+                {
+                    response.status = 1;
+                    response.ErrorDesc = "Empty Input can't be accpeted..";
+                    _logger.LogWarning("Can't be null");
 
-        //        if(updateIproduct == null)
-        //        {
-        //            response.status = 1;
-        //            response.ErrorDesc = "Empty Input can't be accpeted..";
-        //            _logger.LogWarning("Can't be null");
+                }
+                else
+                {
+                    updateIproduct.ProductId = updateRequest.ProductId;
+                    updateIproduct.Sku = updateRequest.Sku;
+                    updateIproduct.SupplierId = updateRequest.SupplierId;
+                    _dbContext.Iproducts.Update(updateIproduct);
+                    await _dbContext.SaveChangesAsync();
+                    response.status = 0;
+                    response.ErrorDesc = $"Updated Successfully";
+                }
 
-        //        }
-        //        else
-        //        {
-        //            updateIproduct.ProductId = updateRequest.ProductId;
-        //            updateIproduct.Sku = updateRequest.Sku;
-        //            updateIproduct.SupplierId = updateRequest.SupplierId;
-
-        //        }
-
-        //        var updateMproduct = _dbContext.Mproducts.Where(p => p.ProductId == updateRequest.ProductId).First();
-        //        if (updateMproduct == null)
-        //        {
-        //            response.status = 1;
-        //            response.ErrorDesc = "Empty Input can't be accpeted..";
-        //            _logger.LogWarning("Can't be null");
-        //        }
-        //        else
-        //        {
-        //            updateMproduct.ProductName = updateRequest.ProductName;
-        //            updateMproduct.Category = updateRequest.Category;
-
-        //        }
-        //    }catch(Exception ex)
-        //    {
-
-        //    }
-        //    return response;
-        //}
+                var updateMproduct = _dbContext.Mproducts.Where(p => p.ProductId == updateRequest.ProductId).First();
+                if (updateMproduct == null)
+                {
+                    response.status = 1;
+                    response.ErrorDesc = "Empty Input can't be accpeted..";
+                    _logger.LogWarning("Can't be null");
+                }
+                else
+                {
+                    updateMproduct.ProductName = updateRequest.ProductName;
+                    updateMproduct.Category = updateRequest.Category;
+                    updateMproduct.UnitPrice = updateRequest.UnitPrice;
+                    updateMproduct.Description = updateRequest.Description;
+                    updateMproduct.MaterialsRequired = updateRequest.MaterialsRequired;
+                    updateMproduct.ImagePath = updateRequest.ImagePath;
+                    _dbContext.Mproducts.Update(updateMproduct);
+                    await _dbContext.SaveChangesAsync();
+                    response.status = 0;
+                    response.ErrorDesc = $"Updated Successfully";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.status = -1;
+                response.ErrorMessage = "Something is wrong here..";
+                _logger.LogError(ex, "-Exception from" + ex.TargetSite.Name + ex.Message);
+            }
+            return response;
+        }
 
         /// <summary>
         /// delete product data from inventory
         /// </summary>
         /// <param name="IproductId"></param>
         /// <returns></returns>
-        public async Task<GenericApiResponse<InventoryProductManagementResponses>> deleteProductAsync(int IproductId)
+        public async Task<GenericApiResponse<InventoryProductManagementResponses>> DeleteProductAsync(int IproductId)
         {
             GenericApiResponse<InventoryProductManagementResponses> response = new();
             try
             {
                 var delete = await _dbContext.Iproducts.FirstOrDefaultAsync(p => p.IproductId == IproductId);
-                if(delete != null)
+                if (delete != null)
                 {
                     _dbContext.Iproducts.Remove(delete);
                     await _dbContext.SaveChangesAsync();
@@ -190,9 +197,10 @@ namespace Inventory_API.Services
                 {
                     response.status = 1;
                     response.ErrorDesc = "Product Not Found???";
-                    
+
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 response.status = -1;
                 response.ErrorDesc = "An error occurred while deleting the product.";
@@ -200,8 +208,6 @@ namespace Inventory_API.Services
             }
             return response;
         }
-
-        //    SKU(Stock Keeping Unit) assignmentns
         //    SKU(Stock Keeping Unit) assignment
         //    Categorization(e.g., Electronics, Clothing, Food, etc.)
         //    Supplier & Vendor Information

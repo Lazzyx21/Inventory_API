@@ -1,4 +1,5 @@
-﻿using Inventory_API.DTO.Response;
+﻿using Inventory_API.DTO.Request;
+using Inventory_API.DTO.Response;
 using Inventory_API.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +10,13 @@ namespace Inventory_API.Controllers
     public class InventoryController : Controller
     {
         private readonly IInventorySerivce _inventorySerivce;
+        private readonly IInventoryProductManagementServices _Iproducts;
         private readonly ILogger<InventoryController> _logger;
 
-        public InventoryController(ILogger<InventoryController> logger, IInventorySerivce inventorySerivce, IConfiguration configuration)
+        public InventoryController(ILogger<InventoryController> logger, IInventorySerivce inventorySerivce, IInventoryProductManagementServices inventoryProduct,IConfiguration configuration)
         {
             _logger = logger;
+            _Iproducts = inventoryProduct;
             _inventorySerivce = inventorySerivce;
         }
 
@@ -24,5 +27,30 @@ namespace Inventory_API.Controllers
             return await _inventorySerivce.GetInventoryDataAsync();
 
         }
+
+        [HttpPost]
+        public async Task<GenericApiResponse<InventoryProductManagementResponses>> CreateProductAsync(InventoryProductManagementRequest createRequest)
+        {
+            _logger.LogInformation("Creating new products");
+            return await _Iproducts.CreateProductAsync(createRequest);
+        }
+
+        [HttpPut]
+        public async Task<GenericApiResponse<string>> UpdateProductAsync(InventoryProductManagementRequest updateRequest)
+        {
+            _logger.LogInformation("Updating Products Informatin.");
+            return await _Iproducts.UpdateProductAsync(updateRequest);
+        }
+
+        [HttpDelete]
+        public async Task<GenericApiResponse<InventoryProductManagementResponses>> DeleteProductAsync(int IproductId)
+        {
+            _logger.LogInformation("Deleting product's data.");
+            return await _Iproducts.DeleteProductAsync(IproductId);
+        }
+
+
+
+
     }
 }

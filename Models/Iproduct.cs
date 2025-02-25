@@ -14,4 +14,6 @@ public partial class Iproduct
     public int? SupplierId { get; set; }
 
     public virtual Mproduct? Product { get; set; }
+
+    public virtual Supplier? Supplier { get; set; }
 }

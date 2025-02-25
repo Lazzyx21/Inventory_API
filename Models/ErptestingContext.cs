@@ -15,6 +15,10 @@ public partial class ErptestingContext : DbContext
     {
     }
 
+    public virtual DbSet<Batch> Batches { get; set; }
+
+    public virtual DbSet<BatchMov> BatchMovs { get; set; }
+
     public virtual DbSet<Inventory> Inventories { get; set; }
 
     public virtual DbSet<Iproduct> Iproducts { get; set; }
@@ -27,6 +31,8 @@ public partial class ErptestingContext : DbContext
 
     public virtual DbSet<SalesLog> SalesLogs { get; set; }
 
+    public virtual DbSet<Supplier> Suppliers { get; set; }
+
     public virtual DbSet<Warehouse> Warehouses { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -35,6 +41,40 @@ public partial class ErptestingContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Batch>(entity =>
+        {
+            entity.Property(e => e.BatchId).HasColumnName("Batch_Id");
+            entity.Property(e => e.BatchCode).HasColumnName("Batch_Code");
+            entity.Property(e => e.ExpDate)
+                .HasColumnType("datetime")
+                .HasColumnName("exp_date");
+            entity.Property(e => e.ManufacturingDate)
+                .HasColumnType("datetime")
+                .HasColumnName("manufacturing_date");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.SupplierId).HasColumnName("supplier_id");
+        });
+
+        modelBuilder.Entity<BatchMov>(entity =>
+        {
+            entity.HasKey(e => e.MovId);
+
+            entity.ToTable("Batch_MOV");
+
+            entity.Property(e => e.MovId).HasColumnName("mov_ID");
+            entity.Property(e => e.BatchId).HasColumnName("Batch_Id");
+            entity.Property(e => e.Date)
+                .HasColumnType("datetime")
+                .HasColumnName("date");
+            entity.Property(e => e.Location)
+                .HasMaxLength(150)
+                .HasColumnName("location");
+            entity.Property(e => e.MovementType)
+                .HasMaxLength(150)
+                .HasColumnName("movement_type");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+        });
+
         modelBuilder.Entity<Inventory>(entity =>
         {
             entity.HasKey(e => e.InventoryId).HasName("PK__MInvento__F5FDE6D388E31A80");
@@ -66,13 +106,17 @@ public partial class ErptestingContext : DbContext
             entity.HasOne(d => d.Product).WithMany(p => p.Iproducts)
                 .HasForeignKey(d => d.ProductId)
                 .HasConstraintName("FK__IProducts__Produ__4183B671");
+
+            entity.HasOne(d => d.Supplier).WithMany(p => p.Iproducts)
+                .HasForeignKey(d => d.SupplierId)
+                .HasConstraintName("FK__IProducts__Suppl__45544755");
         });
 
         modelBuilder.Entity<Mproduct>(entity =>
         {
             entity.HasKey(e => e.ProductId).HasName("PK__MProduct__B40CC6EDD986E7ED");
 
-            entity.ToTable("MProduct", "manufacturing");
+            entity.ToTable("MProduct");
 
             entity.Property(e => e.Category)
                 .HasMaxLength(50)
@@ -135,6 +179,25 @@ public partial class ErptestingContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_dt");
             entity.Property(e => e.Wid).HasColumnName("WID");
+        });
+
+        modelBuilder.Entity<Supplier>(entity =>
+        {
+            entity.HasKey(e => e.SupplierId).HasName("PK__MSupplie__4BE66694CF643220");
+
+            entity.ToTable("Supplier");
+
+            entity.Property(e => e.SupplierId).HasColumnName("SupplierID");
+            entity.Property(e => e.Address).HasColumnType("text");
+            entity.Property(e => e.ContactInfo)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.OrderHistory)
+                .HasColumnType("datetime")
+                .HasColumnName("order_history");
+            entity.Property(e => e.SupplierName)
+                .HasMaxLength(100)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Warehouse>(entity =>

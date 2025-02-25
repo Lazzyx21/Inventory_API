@@ -1,6 +1,7 @@
 using Inventory_API.Services;
 using Inventory_API.Services.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,16 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllersWithViews();
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen(options =>
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Version = "v1",
+            Title = "Inventory API",
+            Description = "Currently its just a Get API.",
+            TermsOfService = new Uri("https://hianime.to/home")
+        })
+);
+
 
 
 builder.Services.AddDbContext<Inventory_API.Models.ErptestingContext>(options =>
@@ -22,6 +33,7 @@ builder.Services.AddDbContext<Inventory_API.Models.ErptestingContext>(options =>
 //checking more for something
 //Services
 builder.Services.AddScoped<IInventorySerivce, InventoryService>();
+builder.Services.AddScoped<IInventoryProductManagementServices, InventoryProductManagementServices>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
@@ -43,6 +55,7 @@ else
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
 
 app.MapGet("/", context =>
@@ -53,8 +66,11 @@ app.MapGet("/", context =>
 
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
