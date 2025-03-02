@@ -9,7 +9,9 @@ public partial class Batch
 
     public int ProductId { get; set; }
 
-    public int? BatchCode { get; set; }
+    public string? PrdCode { get; set; }
+
+    public string BatchCode { get; set; } = null!;
 
     public DateTime? ManufacturingDate { get; set; }
 

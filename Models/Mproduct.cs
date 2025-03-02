@@ -7,6 +7,10 @@ public partial class Mproduct
 {
     public int ProductId { get; set; }
 
+    public string? PrdCode { get; set; }
+
+    public string? BatchCode { get; set; }
+
     public string ProductName { get; set; } = null!;
 
     public string? Category { get; set; }

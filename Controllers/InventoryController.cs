@@ -10,10 +10,10 @@ namespace Inventory_API.Controllers
     public class InventoryController : Controller
     {
         private readonly IInventorySerivce _inventorySerivce;
-        private readonly IInventoryProductManagementServices _Iproducts;
+        private readonly IInvProductManagementServices _Iproducts;
         private readonly ILogger<InventoryController> _logger;
 
-        public InventoryController(ILogger<InventoryController> logger, IInventorySerivce inventorySerivce, IInventoryProductManagementServices inventoryProduct,IConfiguration configuration)
+        public InventoryController(ILogger<InventoryController> logger, IInventorySerivce inventorySerivce, IInvProductManagementServices inventoryProduct,IConfiguration configuration)
         {
             _logger = logger;
             _Iproducts = inventoryProduct;
@@ -29,7 +29,7 @@ namespace Inventory_API.Controllers
         }
 
         [HttpPost]
-        public async Task<GenericApiResponse<InventoryProductManagementResponses>> CreateProductAsync(InventoryProductManagementRequest createRequest)
+        public async Task<GenericApiResponse<InvProductManagementResponses>> CreateProductAsync(InventoryProductManagementRequest createRequest)
         {
             _logger.LogInformation("Creating new products");
             return await _Iproducts.CreateProductAsync(createRequest);
@@ -43,12 +43,18 @@ namespace Inventory_API.Controllers
         }
 
         [HttpDelete]
-        public async Task<GenericApiResponse<InventoryProductManagementResponses>> DeleteProductAsync(int IproductId)
+        public async Task<GenericApiResponse<InvProductManagementResponses>> DeleteProductAsync(int IproductId)
         {
             _logger.LogInformation("Deleting product's data.");
             return await _Iproducts.DeleteProductAsync(IproductId);
         }
 
+        [HttpGet("expiring-products")]
+        public async Task<GenericApiResponse<List<ExpiryVerify>>> VerifyDateAsync(int days = 3)
+        {
+            _logger.LogInformation("");
+            return await _Iproducts.VerifyDateAsync();
+        }
 
 
 

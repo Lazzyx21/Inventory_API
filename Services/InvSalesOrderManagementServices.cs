@@ -1,11 +1,12 @@
-﻿using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+﻿using Inventory_API.Services.Interface;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Inventory_API.Services
 {
     //Links inventory with sales to ensure real-time stock updates when a sale occurs.
 
 
-    public class InventorySalesOrderManagementServices
+    public class InvSalesOrderManagementServices : IInvSalesOrderManagementServices
     {
         //Features:
         //    Sales Order Processing: Updates stock when a sale is confirmed

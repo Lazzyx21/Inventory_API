@@ -1,8 +1,10 @@
-﻿namespace Inventory_API.Services
+﻿using Inventory_API.Services.Interface;
+
+namespace Inventory_API.Services
 {
     //Automates stock alerts, replenishment, and inventory movements.
 
-    public class InventoryAlerts_AutomationServices
+    public class InvAlerts_AutomationServices : IInvAlerts_AutomationServices
     {
         //Features:
         //    Low Stock Alerts: Notify when stock reaches a minimum level

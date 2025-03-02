@@ -1,9 +1,11 @@
-﻿namespace Inventory_API.Services
+﻿using Inventory_API.Services.Interface;
+
+namespace Inventory_API.Services
 {
     //Tracks real-time stock levels across different warehouses or locations.
 
 
-    public class InventoryStockManagementServices
+    public class InvStockManagementServices : IInvStockManagementServices
     {
         //Features:
         //    Stock Levels: Quantity in hand, allocated stock, and available stock

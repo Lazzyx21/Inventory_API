@@ -1,6 +1,6 @@
 ﻿namespace Inventory_API.DTO.Response
 {
-    public class InventoryStockManagementResponses
+    public class InvReporting_AnalyticsResponses
     {
     }
 }

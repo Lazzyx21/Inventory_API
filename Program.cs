@@ -33,7 +33,13 @@ builder.Services.AddDbContext<Inventory_API.Models.ErptestingContext>(options =>
 //checking more for something
 //Services
 builder.Services.AddScoped<IInventorySerivce, InventoryService>();
-builder.Services.AddScoped<IInventoryProductManagementServices, InventoryProductManagementServices>();
+builder.Services.AddScoped<IInvProductManagementServices, InvProductManagementServices>();
+builder.Services.AddScoped<IInvAlerts_AutomationServices, InvAlerts_AutomationServices>();
+builder.Services.AddScoped<IInvPurchaseManagementServices, InvPurchaseManagementServices>();
+builder.Services.AddScoped<IInvReporting_AnalyticsServices, InvReporting_AnalyticsServices>();
+builder.Services.AddScoped<IInvSalesOrderManagementServices, InvSalesOrderManagementServices>();
+builder.Services.AddScoped<IInvStockManagementServices, InvStockManagementServices>();
+builder.Services.AddScoped<IInvWarehouseLocationServices, InvWarehouseLocationServices>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>

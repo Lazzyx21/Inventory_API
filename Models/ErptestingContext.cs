@@ -27,6 +27,8 @@ public partial class ErptestingContext : DbContext
 
     public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
 
+    public virtual DbSet<PrdCatalog> PrdCatalogs { get; set; }
+
     public virtual DbSet<PurchaseLog> PurchaseLogs { get; set; }
 
     public virtual DbSet<SalesLog> SalesLogs { get; set; }
@@ -118,6 +120,7 @@ public partial class ErptestingContext : DbContext
 
             entity.ToTable("MProduct");
 
+            entity.Property(e => e.BatchCode).HasColumnName("batchCode");
             entity.Property(e => e.Category)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -125,6 +128,7 @@ public partial class ErptestingContext : DbContext
             entity.Property(e => e.MaterialsRequired)
                 .HasColumnType("text")
                 .HasColumnName("Materials Required");
+            entity.Property(e => e.PrdCode).HasMaxLength(150);
             entity.Property(e => e.ProductName)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -142,6 +146,22 @@ public partial class ErptestingContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("status");
+        });
+
+        modelBuilder.Entity<PrdCatalog>(entity =>
+        {
+            entity.HasKey(e => e.CtgId);
+
+            entity.ToTable("PrdCatalog");
+
+            entity.Property(e => e.CtgId).HasColumnName("CtgID");
+            entity.Property(e => e.Description).HasColumnType("text");
+            entity.Property(e => e.ImagePath)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.MaterialsRequired).HasColumnType("text");
+            entity.Property(e => e.ProductCode).HasMaxLength(150);
+            entity.Property(e => e.ProductName).HasMaxLength(200);
         });
 
         modelBuilder.Entity<PurchaseLog>(entity =>

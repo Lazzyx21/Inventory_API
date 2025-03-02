@@ -1,6 +1,6 @@
 ﻿namespace Inventory_API.DTO.Response
 {
-    public class InventoryProductManagementResponses
+    public class InvProductManagementResponses
     {
         public int IproductId { get; set; }
 

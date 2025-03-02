@@ -1,6 +1,6 @@
 ﻿namespace Inventory_API.Services.Interface
 {
-    public interface IInventoryAlerts_AutomationServices
+    public interface IInvAlerts_AutomationServices
     {
         
     }

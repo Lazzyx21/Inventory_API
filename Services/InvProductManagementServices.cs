@@ -9,13 +9,13 @@ namespace Inventory_API.Services
     //This module is the foundation of your inventory system.It stores all details about products.
 
 
-    public class InventoryProductManagementServices : IInventoryProductManagementServices
+    public class InvProductManagementServices : IInvProductManagementServices
     {
-        private readonly ILogger<InventoryProductManagementServices> _logger;
+        private readonly ILogger<InvProductManagementServices> _logger;
         private readonly ErptestingContext _dbContext;
         private readonly IConfiguration _configuration;
 
-        public InventoryProductManagementServices(ILogger<InventoryProductManagementServices> logger, IConfiguration configuration, ErptestingContext dbContext)
+        public InvProductManagementServices(ILogger<InvProductManagementServices> logger, IConfiguration configuration, ErptestingContext dbContext)
         {
             _logger = logger;
             _dbContext = dbContext;
@@ -27,15 +27,15 @@ namespace Inventory_API.Services
         /// List products in inventory
         /// </summary>
         /// <returns></returns>
-        public async Task<GenericApiResponse<List<InventoryProductManagementResponses>>> ListProductAsync()
+        public async Task<GenericApiResponse<List<InvProductManagementResponses>>> ListProductAsync()
         {
-            GenericApiResponse<List<InventoryProductManagementResponses>> response = new();
-            List<InventoryProductManagementResponses> listR = new();
+            GenericApiResponse<List<InvProductManagementResponses>> response = new();
+            List<InvProductManagementResponses> listR = new();
 
 
             try
             {
-                listR = await _dbContext.Mproducts.Select(s => new InventoryProductManagementResponses
+                listR = await _dbContext.Mproducts.Select(s => new InvProductManagementResponses
                 {
                     ProductId = s.ProductId,
                     ProductName = s.ProductName,
@@ -63,9 +63,9 @@ namespace Inventory_API.Services
         /// </summary>
         /// <param name="createRequest"></param>
         /// <returns></returns>
-        public async Task<GenericApiResponse<InventoryProductManagementResponses>> CreateProductAsync(InventoryProductManagementRequest createRequest)
+        public async Task<GenericApiResponse<InvProductManagementResponses>> CreateProductAsync(InventoryProductManagementRequest createRequest)
         {
-            GenericApiResponse<InventoryProductManagementResponses> response = new();
+            GenericApiResponse<InvProductManagementResponses> response = new();
             if (createRequest == null)
             {
                 response.status = -1;
@@ -180,9 +180,9 @@ namespace Inventory_API.Services
         /// </summary>
         /// <param name="IproductId"></param>
         /// <returns></returns>
-        public async Task<GenericApiResponse<InventoryProductManagementResponses>> DeleteProductAsync(int IproductId)
+        public async Task<GenericApiResponse<InvProductManagementResponses>> DeleteProductAsync(int IproductId)
         {
-            GenericApiResponse<InventoryProductManagementResponses> response = new();
+            GenericApiResponse<InvProductManagementResponses> response = new();
             try
             {
                 var delete = await _dbContext.Iproducts.FirstOrDefaultAsync(p => p.IproductId == IproductId);
@@ -209,9 +209,67 @@ namespace Inventory_API.Services
             return response;
         }
         //    SKU(Stock Keeping Unit) assignment
+
         //    Categorization(e.g., Electronics, Clothing, Food, etc.)
+        public async Task<GenericApiResponse<List<InvCategorization>>> prdCatAsync()
+        {
+            GenericApiResponse<List<InvCategorization>> response = new();
+            List<InvCategorization> getCat = new();
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                response.status = -1;
+                response.ErrorDesc = "An error occurred while Displaying the category of product.";
+                _logger.LogError($"Error While displaying Category of product: {ex.Message}");
+            }
+            return response;
+        }
+
+
+
         //    Supplier & Vendor Information
+
+
+
         //    Product Expiry & Batch Tracking(for perishable goods)
-        //    Unit of Measurement(e.g., kg, liter, pieces)
+        /// <summary>
+        /// Check product's expiry date..
+        /// </summary>
+        /// <param name="days"></param>
+        /// <returns></returns>
+        public async Task<GenericApiResponse<List<ExpiryVerify>>> VerifyDateAsync(int days = 3)
+        {
+            GenericApiResponse<List<ExpiryVerify>> response = new();
+            List<ExpiryVerify> exV = new();
+            try
+            {
+                var today = DateTime.UtcNow.Date;
+                var upcomingDate = today.AddDays(days);
+                exV = await _dbContext.Batches
+                    .Where(p => p.ExpDate.HasValue && p.ExpDate.Value >= today && p.ExpDate.Value <= upcomingDate)
+                    .Select(p => new ExpiryVerify
+                    {
+                        BatchId = p.BatchId,
+                        BatchCode = p.BatchCode,
+                        ExpDate = p.ExpDate,
+                        DaysUntilExpiry = p.ExpDate.HasValue ? (p.ExpDate.Value - today).Days : (int?)null
+                    }).ToListAsync();
+                response.status = 200;
+                response.ErrorDesc = "Successfully Fetch!!";
+                response.Data = exV;
+            }
+            catch (Exception ex)
+            {
+                response.status = 0;
+                response.ErrorDesc = "Error";
+                _logger.LogError(ex, "-Exception from " + ex.TargetSite.Name + ex.Message);
+            }
+            return response;
+        }
     }
+    //    Unit of Measurement(e.g., kg, liter, pieces)
 }
+

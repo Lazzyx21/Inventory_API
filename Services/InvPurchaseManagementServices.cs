@@ -1,9 +1,11 @@
-﻿namespace Inventory_API.Services
+﻿using Inventory_API.Services.Interface;
+
+namespace Inventory_API.Services
 {
     //Tracks incoming inventory from suppliers and updates stock automatically.
 
 
-    public class InventoryPurchaseManagementServices
+    public class InvPurchaseManagementServices : IInvPurchaseManagementServices
     {
         //Features:
         //    Purchase Orders(POs): Create and track supplier orders
