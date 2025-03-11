@@ -56,6 +56,13 @@ namespace Inventory_API.Controllers
             return await _Iproducts.VerifyDateAsync();
         }
 
+        [HttpGet("Catogory")]
+        public async Task<GenericApiResponse<List<InvCategorization>>> prdCatAsync(string catName)
+        {
+            _logger.LogInformation("");
+            return await _Iproducts.prdCatAsync(catName);
+        }
+
 
 
     }

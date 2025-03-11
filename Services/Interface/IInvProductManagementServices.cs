@@ -10,7 +10,7 @@ namespace Inventory_API.Services.Interface
         public Task<GenericApiResponse<string>> UpdateProductAsync(InventoryProductManagementRequest updateRequest);
         public Task<GenericApiResponse<InvProductManagementResponses>> DeleteProductAsync(int IproductId);
         public Task<GenericApiResponse<List<ExpiryVerify>>> VerifyDateAsync(int days = 3);
-        public Task<GenericApiResponse<List<InvCategorization>>> prdCatAsync();
+        public Task<GenericApiResponse<List<InvCategorization>>> prdCatAsync(string catName);
 
     }
 }

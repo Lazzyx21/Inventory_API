@@ -211,13 +211,33 @@ namespace Inventory_API.Services
         //    SKU(Stock Keeping Unit) assignment
 
         //    Categorization(e.g., Electronics, Clothing, Food, etc.)
-        public async Task<GenericApiResponse<List<InvCategorization>>> prdCatAsync()
+        /// <summary>
+        /// finding the products by there category name.
+        /// </summary>
+        /// <param name="catName"></param>
+        /// <returns></returns>
+        public async Task<GenericApiResponse<List<InvCategorization>>> prdCatAsync(string catName)
         {
             GenericApiResponse<List<InvCategorization>> response = new();
             List<InvCategorization> getCat = new();
             try
             {
+                getCat = await _dbContext.Mproducts.Where(p => p.Category != null && p.Category.ToLower().Contains(catName.ToLower()))
+                    .Select(p => new InvCategorization
+                    {
+                        ProductId = p.ProductId,
+                        ProductName = p.ProductName,
+                        PrdCode = p.PrdCode,
+                        Category = p.Category,
+                        UnitPrice = p.UnitPrice,
+                       ImagePath = p.ImagePath,
 
+                    }).ToListAsync();
+
+                response.Data = getCat;
+                response.status = 200;
+                _logger.LogInformation("Succesfully Got the data");
+                    //LINQ query is required to find the required category
             }
             catch (Exception ex)
             {
