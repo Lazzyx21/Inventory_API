@@ -31,6 +31,8 @@ public partial class ErptestingContext : DbContext
 
     public virtual DbSet<PurchaseLog> PurchaseLogs { get; set; }
 
+    public virtual DbSet<RawMaterial> RawMaterials { get; set; }
+
     public virtual DbSet<SalesLog> SalesLogs { get; set; }
 
     public virtual DbSet<Supplier> Suppliers { get; set; }
@@ -92,6 +94,10 @@ public partial class ErptestingContext : DbContext
             entity.Property(e => e.Quantity).HasDefaultValue(0);
             entity.Property(e => e.Wid).HasColumnName("WID");
 
+            entity.HasOne(d => d.Material).WithMany(p => p.Inventories)
+                .HasForeignKey(d => d.MaterialId)
+                .HasConstraintName("FK__MInventor__Mater__06CD04F7");
+
             entity.HasOne(d => d.Product).WithMany(p => p.Inventories)
                 .HasForeignKey(d => d.ProductId)
                 .HasConstraintName("FK__MInventor__Produ__07C12930");
@@ -125,9 +131,6 @@ public partial class ErptestingContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Description).HasColumnType("text");
-            entity.Property(e => e.MaterialsRequired)
-                .HasColumnType("text")
-                .HasColumnName("Materials Required");
             entity.Property(e => e.PrdCode).HasMaxLength(150);
             entity.Property(e => e.ProductName)
                 .HasMaxLength(100)
@@ -166,11 +169,58 @@ public partial class ErptestingContext : DbContext
 
         modelBuilder.Entity<PurchaseLog>(entity =>
         {
-            entity.HasKey(e => e.PurchaseId);
+            entity.HasKey(e => e.PurchaseId).HasName("PK__Purchase__6B0A6BDE53F11494");
 
             entity.ToTable("PurchaseLog", "inventory");
 
             entity.Property(e => e.PurchaseId).HasColumnName("PurchaseID");
+            entity.Property(e => e.Address).HasMaxLength(255);
+            entity.Property(e => e.ContactInfo).HasMaxLength(255);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.MaterialId).HasColumnName("MaterialID");
+            entity.Property(e => e.MaterialName).HasMaxLength(255);
+            entity.Property(e => e.PrdCode).HasMaxLength(100);
+            entity.Property(e => e.ProductName).HasMaxLength(255);
+            entity.Property(e => e.PurchaseDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.SupplierId).HasColumnName("SupplierID");
+            entity.Property(e => e.SupplierName).HasMaxLength(255);
+            entity.Property(e => e.UnitCost).HasColumnType("decimal(10, 2)");
+
+            entity.HasOne(d => d.Material).WithMany(p => p.PurchaseLogs)
+                .HasForeignKey(d => d.MaterialId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__PurchaseL__Mater__442B18F2");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.PurchaseLogs)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__PurchaseL__Produ__451F3D2B");
+
+            entity.HasOne(d => d.Supplier).WithMany(p => p.PurchaseLogs)
+                .HasForeignKey(d => d.SupplierId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__PurchaseL__Suppl__4336F4B9");
+        });
+
+        modelBuilder.Entity<RawMaterial>(entity =>
+        {
+            entity.HasKey(e => e.MaterialId).HasName("PK__MRawMate__C5061317A6E66928");
+
+            entity.Property(e => e.MaterialId).HasColumnName("MaterialID");
+            entity.Property(e => e.Description).HasColumnType("text");
+            entity.Property(e => e.MaterialName)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.StockLevel).HasDefaultValue(0);
+            entity.Property(e => e.SupplierId).HasColumnName("SupplierID");
+            entity.Property(e => e.UnitCost).HasColumnType("decimal(10, 2)");
+
+            entity.HasOne(d => d.Supplier).WithMany(p => p.RawMaterials)
+                .HasForeignKey(d => d.SupplierId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__MRawMater__Suppl__0C85DE4D");
         });
 
         modelBuilder.Entity<SalesLog>(entity =>

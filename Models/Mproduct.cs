@@ -26,4 +26,6 @@ public partial class Mproduct
     public virtual ICollection<Inventory> Inventories { get; set; } = new List<Inventory>();
 
     public virtual ICollection<Iproduct> Iproducts { get; set; } = new List<Iproduct>();
+
+    public virtual ICollection<PurchaseLog> PurchaseLogs { get; set; } = new List<PurchaseLog>();
 }

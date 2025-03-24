@@ -1,0 +1,6 @@
+use ERPTesting
+CREATE TABLE PurchaseOrders (
+    PO_ID INT IDENTITY(1,1) PRIMARY KEY,
+    OrderDate DATE DEFAULT GETDATE(),
+    PO_Number AS ('PO' + CONVERT(VARCHAR(6), OrderDate, 112) + '-' + RIGHT('000' + CAST(PO_ID AS VARCHAR), 3)) PERSISTED
+);

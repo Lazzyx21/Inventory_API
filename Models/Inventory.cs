@@ -19,5 +19,7 @@ public partial class Inventory
 
     public int? Qunatity { get; set; }
 
+    public virtual RawMaterial? Material { get; set; }
+
     public virtual Mproduct? Product { get; set; }
 }

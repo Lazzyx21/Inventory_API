@@ -1,5 +1,6 @@
 using Inventory_API.Services;
 using Inventory_API.Services.Interface;
+using Inventory_API.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllersWithViews();
@@ -75,7 +77,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();
-
+app.MapHub<InventoryHub>("/inventoryHub");
 app.MapStaticAssets();
 
 app.MapControllerRoute(

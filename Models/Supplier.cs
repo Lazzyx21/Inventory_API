@@ -15,5 +15,11 @@ public partial class Supplier
 
     public DateTime? OrderHistory { get; set; }
 
+    public int? IsActive { get; set; }
+
     public virtual ICollection<Iproduct> Iproducts { get; set; } = new List<Iproduct>();
+
+    public virtual ICollection<PurchaseLog> PurchaseLogs { get; set; } = new List<PurchaseLog>();
+
+    public virtual ICollection<RawMaterial> RawMaterials { get; set; } = new List<RawMaterial>();
 }
