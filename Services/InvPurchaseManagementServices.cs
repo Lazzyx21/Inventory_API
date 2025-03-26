@@ -107,56 +107,7 @@ namespace Inventory_API.Services
             return response;
         }
 
-        public async Task<GenericApiResponse<byte[]>> DownloadTemplateAsync()
-        {
-            GenericApiResponse<byte[]> response = new();
-            try
-            {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-                var fileBytes = await Task.Run(() =>
-                {
-                    using (var package = new ExcelPackage())
-                    {
-                        var worksheet = package.Workbook.Worksheets.Add("Template");
-
-                        // Set headers (columns)
-                        worksheet.Cells[1, 1].Value = "Product Name";
-                        worksheet.Cells[1, 2].Value = "Description";
-                        worksheet.Cells[1, 3].Value = "Price";
-                        worksheet.Cells[1, 4].Value = "Quantity";
-                        worksheet.Cells[1, 5].Value = "Category Name";
-                        worksheet.Cells[1, 6].Value = "Supplier Name";
-                        worksheet.Cells[1, 7].Value = "Supplier Email";
-                        worksheet.Cells[1, 8].Value = "Supplier Phone";
-                        worksheet.Cells[1, 9].Value = "Brand";
-                        worksheet.Cells[1, 10].Value = "Discount Percentage";
-                        worksheet.Cells[1, 11].Value = "IsActive (true/false)";
-
-                        worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
-
-                        return package.GetAsByteArray();
-                    }
-                });
-
-                response.status = 200;
-                response.ErrorMessage = "Template generated successfully.";
-                response.Data = fileBytes;
-
-
-            }
-            catch (Exception ex)
-            {
-                response.status = -1;
-                response.ErrorDesc = "ERROR";
-                response.Data = null;
-                _logger.LogError($"Error generating template: {ex.Message}");
-
-
-            }
-            return response;
-        }
-
+        
         //    Supplier Management: Store supplier details and purchase history
         public async Task<GenericApiResponse<List<SupplierDetailsResponse>>> supplierData()
         {
