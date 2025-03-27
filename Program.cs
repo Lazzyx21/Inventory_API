@@ -37,7 +37,7 @@ builder.Services.AddDbContext<Inventory_API.Models.ErptestingContext>(options =>
 builder.Services.AddScoped<IInventorySerivce, InventoryService>();
 builder.Services.AddScoped<IInvProductManagementServices, InvProductManagementServices>();
 builder.Services.AddScoped<IInvAlerts_AutomationServices, InvAlerts_AutomationServices>();
-builder.Services.AddScoped<IInvPurchaseManagementServices, InvPurchaseManagementServices>();
+//builder.Services.AddScoped<IInvPurchaseManagementServices, InvPurchaseManagementServices>();
 builder.Services.AddScoped<IInvReporting_AnalyticsServices, InvReporting_AnalyticsServices>();
 builder.Services.AddScoped<IInvSalesOrderManagementServices, InvSalesOrderManagementServices>();
 builder.Services.AddScoped<IInvStockManagementServices, InvStockManagementServices>();
@@ -51,7 +51,7 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
 });
-var app = builder.Build();
+    var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {

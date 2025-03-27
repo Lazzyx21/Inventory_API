@@ -70,6 +70,7 @@ public partial class ErptestingContext : DbContext
             entity.Property(e => e.Date)
                 .HasColumnType("datetime")
                 .HasColumnName("date");
+            entity.Property(e => e.InventoryId).HasColumnName("InventoryID");
             entity.Property(e => e.Location)
                 .HasMaxLength(150)
                 .HasColumnName("location");
@@ -77,6 +78,14 @@ public partial class ErptestingContext : DbContext
                 .HasMaxLength(150)
                 .HasColumnName("movement_type");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
+
+            entity.HasOne(d => d.Inventory).WithMany(p => p.BatchMovs)
+                .HasForeignKey(d => d.InventoryId)
+                .HasConstraintName("FK__Batch_MOV__Inven__536D5C82");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.BatchMovs)
+                .HasForeignKey(d => d.ProductId)
+                .HasConstraintName("FK__Batch_MOV__Produ__52793849");
         });
 
         modelBuilder.Entity<Inventory>(entity =>

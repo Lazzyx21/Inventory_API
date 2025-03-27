@@ -9,6 +9,10 @@ public partial class BatchMov
 
     public int? BatchId { get; set; }
 
+    public int? ProductId { get; set; }
+
+    public int? InventoryId { get; set; }
+
     public string? Location { get; set; }
 
     public int? Quantity { get; set; }
@@ -16,4 +20,8 @@ public partial class BatchMov
     public string? MovementType { get; set; }
 
     public DateTime? Date { get; set; }
+
+    public virtual Inventory? Inventory { get; set; }
+
+    public virtual Mproduct? Product { get; set; }
 }

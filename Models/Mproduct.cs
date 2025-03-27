@@ -23,6 +23,8 @@ public partial class Mproduct
 
     public string? ImagePath { get; set; }
 
+    public virtual ICollection<BatchMov> BatchMovs { get; set; } = new List<BatchMov>();
+
     public virtual ICollection<Inventory> Inventories { get; set; } = new List<Inventory>();
 
     public virtual ICollection<Iproduct> Iproducts { get; set; } = new List<Iproduct>();

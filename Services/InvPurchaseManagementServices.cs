@@ -3,7 +3,7 @@ using Inventory_API.DTO.Response;
 using Inventory_API.Models;
 using Inventory_API.Services.Interface;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml;
+
 
 namespace Inventory_API.Services
 {
@@ -11,12 +11,12 @@ namespace Inventory_API.Services
 
     public class InvPurchaseManagementServices : IInvPurchaseManagementServices
     {
-        private readonly Logger<InvPurchaseManagementServices> _logger;
+        private readonly ILogger<InvPurchaseManagementServices> _logger;
         private readonly ErptestingContext _dbContext;
         private readonly IConfiguration _configuration;
         //add signalR connection
 
-        public InvPurchaseManagementServices(ErptestingContext dbContext, IConfiguration configuration, Logger<InvPurchaseManagementServices> logger)
+        public InvPurchaseManagementServices(ErptestingContext dbContext, IConfiguration configuration, ILogger<InvPurchaseManagementServices> logger)
         {
             _dbContext = dbContext;
             _configuration = configuration;
@@ -107,7 +107,7 @@ namespace Inventory_API.Services
             return response;
         }
 
-        
+
         //    Supplier Management: Store supplier details and purchase history
         public async Task<GenericApiResponse<List<SupplierDetailsResponse>>> supplierData()
         {
@@ -138,14 +138,14 @@ namespace Inventory_API.Services
                 _logger.LogError($"Error retrieving supplier details: {ex.Message}");
             }
             return response;
-            
+
         }
         public async Task<GenericApiResponse<SupplierDetailsResponse>> addSupplier(CreateSupplierDetails createData)
         {
             GenericApiResponse<SupplierDetailsResponse> response = new();
             try
             {
-                if(createData == null)
+                if (createData == null)
                 {
                     response.status = -1;
                     response.ErrorDesc = "ERROR";
@@ -177,64 +177,60 @@ namespace Inventory_API.Services
             }
             return response;
         }
-        //public async Task<GenericApiResponse<List<PurchaseHistoryResponses>>> purchaseHistory()
-        //{
-        //    GenericApiResponse<List<PurchaseHistoryResponses>> response = new();
-        //    List<PurchaseHistoryResponses> listHistory = new();
-        //    try
-        //    {
-        //        listHistory = await _dbContext.PurchaseLogs
-        //            .Select()
-        //    }
-        //}
+        
+        /// <summary>
+        /// Purchase History api not working fixing required.
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="supplierId"></param>
+        /// <returns></returns>
+        public async Task<GenericApiResponse<List<PurchaseLogResponses>>> purchaseHistory(DateTime? startDate = null, DateTime? endDate = null, int? supplierId = null)
+        {
+            GenericApiResponse<List<PurchaseLogResponses>> response = new();
+            try
+            {
+                var query = _dbContext.PurchaseLogs.AsQueryable();
 
-        //public async Task<GenericApiResponse<List<PurchaseLogResponses>>> purchaseHistory(
-        //    DateTime? startDate = null, DateTime? endDate = null, int? supplierId = null)
-        //{
-        //    GenericApiResponse<List<PurchaseLogResponses>> response = new();
-        //    try
-        //    {
-        //        var query = _dbContext.PurchaseLogs.AsQueryable();
+                if (startDate.HasValue && endDate.HasValue)
+                    query = query.Where(p => p.PurchaseDate >= startDate && p.PurchaseDate <= endDate);
 
-        //        if (startDate.HasValue && endDate.HasValue)
-        //            query = query.Where(p => p.PurchaseDate >= startDate && p.PurchaseDate <= endDate);
+                if (supplierId.HasValue)
+                    query = query.Where(p => p.SupplierId == supplierId);
 
-        //        if (supplierId.HasValue)
-        //            query = query.Where(p => p.SupplierId == supplierId);
+                var GetLog = await query
+                    .OrderByDescending(p => p.PurchaseDate)
+                    .Select(p => new PurchaseLogResponses
+                    {
+                        PurchaseId = p.PurchaseId,
+                        SupplierId = p.SupplierId,
+                        ProductId = p.ProductId,
+                        MaterialId = p.MaterialId,
+                        SupplierName = p.SupplierName,
+                        ContactInfo = p.ContactInfo,
+                        Address = p.Address,
+                        MaterialName = p.MaterialName,
+                        Description = p.Description,
+                        UnitCost = p.UnitCost,
+                        StockQuantity = p.StockQuantity,
+                        PrdCode = p.PrdCode,
+                        ProductName = p.ProductName,
+                        MaterialsRequired = p.MaterialsRequired,
+                        PurchaseDate = p.PurchaseDate
+                    }).ToListAsync();
 
-        //        var GetLog = await query
-        //            .OrderByDescending(p => p.PurchaseDate)
-        //            .Select(p => new PurchaseLogResponses
-        //            {
-        //                PurchaseId = p.PurchaseId,
-        //                SupplierId = p.SupplierId,
-        //                ProductId = p.ProductId,
-        //                MaterialId = p.MaterialId,
-        //                SupplierName = p.SupplierName,
-        //                ContactInfo = p.ContactInfo,
-        //                Address = p.Address,
-        //                MaterialName = p.MaterialName,
-        //                Description = p.Description,
-        //                UnitCost = p.UnitCost,
-        //                StockQuantity = p.StockQuantity,
-        //                PrdCode = p.PrdCode,
-        //                ProductName = p.ProductName,
-        //                MaterialsRequired = p.MaterialsRequired,
-        //                PurchaseDate = p.PurchaseDate
-        //            }).ToListAsync();
-
-        //        response.status = 200;
-        //        response.ErrorDesc = "Data Fetched!!";
-        //        response.Data = GetLog;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        response.status = -1;
-        //        response.ErrorDesc = "ERROR";
-        //        _logger.LogError($"Error retrieving Purchase Log details: {ex.Message}");
-        //    }
-        //    return response;
-        //}
+                response.status = 200;
+                response.ErrorDesc = "Data Fetched!!";
+                response.Data = GetLog;
+            }
+            catch (Exception ex)
+            {
+                response.status = -1;
+                response.ErrorDesc = "ERROR";
+                _logger.LogError($"Error retrieving Purchase Log details: {ex.Message}");
+            }
+            return response;
+        }
 
 
 
