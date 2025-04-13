@@ -16,9 +16,9 @@ namespace Inventory_API.Services
         private readonly ILogger<InvProductManagementServices> _logger;
         private readonly ErptestingContext _dbContext;
         private readonly IConfiguration _configuration;
-        private readonly IHubContext<InventoryHub> _hubContext;
+        //private readonly IHubContext<InventoryHub> _hubContext;
 
-        public InvProductManagementServices(ILogger<InvProductManagementServices> logger, IConfiguration configuration, ErptestingContext dbContext, IHubContext<InventoryHub> hubContext)
+        public InvProductManagementServices(ILogger<InvProductManagementServices> logger, IConfiguration configuration, ErptestingContext dbContex)
         {
             _logger = logger;
             _dbContext = dbContext;
@@ -53,7 +53,7 @@ namespace Inventory_API.Services
                 response.ErrorDesc = "Everything worksfine";
                 response.Data = listR;
 
-                await _hubContext.Clients.All.SendAsync("List of products", listR);
+                //await _hubContext.Clients.All.SendAsync("List of products", listR);
             }
             catch (Exception ex)
             {
@@ -108,7 +108,7 @@ namespace Inventory_API.Services
                     };
                     await _dbContext.Iproducts.AddAsync(iproduct);
                     await _dbContext.SaveChangesAsync();
-                    await _hubContext.Clients.All.SendAsync("Data Created", iproduct);
+                    //await _hubContext.Clients.All.SendAsync("Data Created", iproduct);
                     response.status = 0;
                     response.ErrorDesc = "Created data successfully";
                 }
@@ -149,7 +149,7 @@ namespace Inventory_API.Services
                     updateIproduct.SupplierId = updateRequest.SupplierId;
                     _dbContext.Iproducts.Update(updateIproduct);
                     await _dbContext.SaveChangesAsync();
-                    await _hubContext.Clients.All.SendAsync("Updated Iproducts",updateIproduct);
+                    //await _hubContext.Clients.All.SendAsync("Updated Iproducts",updateIproduct);
                     response.status = 0;
                     response.ErrorDesc = $"Updated Successfully";
                 }
@@ -171,7 +171,7 @@ namespace Inventory_API.Services
                     updateMproduct.ImagePath = updateRequest.ImagePath;
                     _dbContext.Mproducts.Update(updateMproduct);
                     await _dbContext.SaveChangesAsync();
-                    await _hubContext.Clients.All.SendAsync("Updated Mproduct",updateMproduct);
+                   // await _hubContext.Clients.All.SendAsync("Updated Mproduct",updateMproduct);
                     response.status = 0;
                     response.ErrorDesc = $"Updated Successfully";
                 }
@@ -201,7 +201,7 @@ namespace Inventory_API.Services
                 {
                     _dbContext.Iproducts.Remove(delete);
                     await _dbContext.SaveChangesAsync();
-                    await _hubContext.Clients.All.SendAsync("Deleted",delete);
+                  //  await _hubContext.Clients.All.SendAsync("Deleted",delete);
                     response.status = 0;
                     response.ErrorDesc = "PRODUCT DETAILS DELETED SUCCEFULLY";
                 }
@@ -247,7 +247,7 @@ namespace Inventory_API.Services
 
                 response.Data = getCat;
                 response.status = 200;
-                await _hubContext.Clients.All.SendAsync("InvCategorization", getCat);
+               // await _hubContext.Clients.All.SendAsync("InvCategorization", getCat);
                 _logger.LogInformation("Succesfully Got the data");
                     //LINQ query is required to find the required category
             }
@@ -288,7 +288,7 @@ namespace Inventory_API.Services
                 response.status = 200;
                 response.ErrorDesc = "Successfully Fetch!!";
                 response.Data = exV;
-                await _hubContext.Clients.All.SendAsync("Check product Expiry",exV);
+               // await _hubContext.Clients.All.SendAsync("Check product Expiry",exV);
             }
             catch (Exception ex)
             {
