@@ -1,6 +1,6 @@
 using Inventory_API.Services;
 using Inventory_API.Services.Interface;
-using Inventory_API.SignalR;
+//using Inventory_API.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -77,7 +77,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();
-app.MapHub<InventoryHub>("/inventoryHub");
+//app.MapHub<InventoryHub>("/inventoryHub");
 app.MapStaticAssets();
 
 app.MapControllerRoute(
